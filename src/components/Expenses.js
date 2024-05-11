@@ -19,14 +19,13 @@ export const Expenses = () => {
     width: '100%'
   };
 
-  // Updated to handle flex-direction row for side-by-side layout
   const containerStyle = {
     display: 'flex',
-    flexDirection: 'row',  // Align items horizontally
-    justifyContent: 'center',  // Center the items horizontally
-    alignItems: 'flex-start',  // Align items to the start of the flex line vertically
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     width: '100%',
-    gap: '40px'  // Space between the form and the list of expenses
+    gap: '40px'
   };
 
   const listItemStyle = {
@@ -65,12 +64,12 @@ export const Expenses = () => {
         <div style={{ width: '60%' }}>
           <ul style={{ padding: 0, width: '100%', overflowY: 'auto' }}>
             {expenses.map((expense) => (
-              <li key={expense.id} style={listItemStyle}>
+              <li key={expense._id} style={listItemStyle}>
                 <span style={itemDetailStyle}><strong>Name:</strong> {expense.name}</span>
                 <span style={itemDetailStyle}><strong>Amount:</strong> {expense.amount.toFixed(2)}kč</span>
                 <span style={itemDetailStyle}><strong>Date:</strong> {formatDate(expense.date)}</span>
                 <span style={itemDetailStyle}><strong>Type:</strong> {expense.type}</span>
-                <button onClick={() => deleteExpense(expense.id)} style={{ padding: '5px 10px', fontSize: '0.85rem', marginLeft: '10px' }}>Delete</button>
+                <button onClick={() => deleteExpense(expense._id)} style={{ padding: '5px 10px', fontSize: '0.85rem', marginLeft: '10px' }}>Delete</button>
               </li>
             ))}
           </ul>

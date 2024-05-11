@@ -35,20 +35,14 @@ export const GlobalProvider = ({ children }) => {
     };
 
     const deleteIncome = async (id) => {
-        console.log("Attempting to delete income with ID:", id); // Log the ID received
-        if (!id) {
-            console.error("Delete attempt without an ID");
-            setError("Deletion failed: No ID provided");
-            return;
-        }
         try {
             await axios.delete(`${BASE_URL}delete-income/${id}`);
-            setIncomes(prevIncomes => prevIncomes.filter(income => income.id !== id));
+            setIncomes(prevIncomes => prevIncomes.filter(income => income._id !== id));
         } catch (err) {
-            console.error("Failed to delete income:", err);
             setError("Failed to delete income: " + (err.response ? err.response.data.message : err.message));
         }
     };
+    
 
     const addExpense = async (expense) => {
         try {
@@ -71,7 +65,7 @@ export const GlobalProvider = ({ children }) => {
     const deleteExpense = async (id) => {
         try {
             await axios.delete(`${BASE_URL}delete-expense/${id}`);
-            setExpenses(prevExpenses => prevExpenses.filter(expense => expense.id !== id));
+            setExpenses(prevExpenses => prevExpenses.filter(expense => expense._id !== id));
         } catch (err) {
             setError("Failed to delete expense: " + (err.response ? err.response.data.message : err.message));
         }

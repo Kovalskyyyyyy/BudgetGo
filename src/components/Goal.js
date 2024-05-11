@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:7770/api/v1'; // Ensure this matches your backend's configured base URL
@@ -6,10 +6,30 @@ const BASE_URL = 'http://localhost:7770/api/v1'; // Ensure this matches your bac
 export const Goal = () => {
   const [goal, setGoal] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
-  const [currentSavings, setCurrentSavings] = useState('');
+  const [currentSavings, setCurrentSavings] = useState(0);
   const [addSavings, setAddSavings] = useState('');
-  const [goalId, setGoalId] = useState('');  // State for storing the goal ID
+  const [goals, setGoals] = useState([]);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/get-goals`);
+      setGoals(response.data);
+      if (response.data.length > 0) {
+        // Assuming you want to show the latest goal as the active one
+        const latestGoal = response.data[0];
+        setGoal(latestGoal.goal);
+        setTargetAmount(latestGoal.targetAmount);
+        setCurrentSavings(latestGoal.currentSavings);
+      }
+    } catch (err) {
+      setError("Failed to fetch goals: " + err.message);
+    }
+  };
 
   const addGoal = async () => {
     if (!goal || !targetAmount) {
@@ -20,25 +40,18 @@ export const Goal = () => {
     const newGoal = {
       goal,
       targetAmount: parseFloat(targetAmount),
-      currentSavings: parseFloat(currentSavings || 0) // Defaults to 0 if undefined
+      currentSavings: parseFloat(currentSavings)
     };
 
     try {
-      const response = await axios.post(`${BASE_URL}/add-goal`, newGoal);
-      console.log('Added goal:', response.data.goal);
-      setGoalId(response.data.goal._id);  // Set the goal ID after adding the goal
+      await axios.post(`${BASE_URL}/add-goal`, newGoal);
       setGoal('');
       setTargetAmount('');
-      setCurrentSavings('');
+      setCurrentSavings(0);
+      fetchGoals();
       setError(null);
     } catch (err) {
-      console.error('Failed to add goal:', err);
-      const errMsg = err.response ? 
-                      (err.response.data ? 
-                        (err.response.data.message || JSON.stringify(err.response.data)) 
-                        : 'No detailed error message.')
-                      : err.message || 'Network error';
-      setError("Failed to add goal: " + errMsg);
+      setError("Failed to add goal: " + err.message);
     }
   };
 
@@ -50,13 +63,14 @@ export const Goal = () => {
     }
 
     try {
-      const response = await axios.patch(`${BASE_URL}/update-goal/${goalId}`, { additionalSavings: savingsToAdd });
-      setCurrentSavings(response.data.currentSavings);
+      const latestGoal = goals[0];
+      const updatedSavings = latestGoal.currentSavings + savingsToAdd;
+      await axios.patch(`${BASE_URL}/update-goal/${latestGoal._id}`, { additionalSavings: savingsToAdd });
+      setCurrentSavings(updatedSavings);
       setAddSavings('');
       setError(null);
     } catch (err) {
-      console.error('Failed to update savings:', err);
-      setError("Failed to update savings: " + (err.response ? err.response.data.message : err.message));
+      setError("Failed to update savings: " + err.message);
     }
   };
 
@@ -79,13 +93,7 @@ export const Goal = () => {
         type="number"
         placeholder="Target amount (kč)"
         value={targetAmount}
-        onChange={(e) => setTargetAmount(parseFloat(e.target.value))}
-      />
-      <input
-        type="number"
-        placeholder="Current savings (kč)"
-        value={currentSavings}
-        onChange={(e) => setCurrentSavings(parseFloat(e.target.value))}
+        onChange={(e) => setTargetAmount(e.target.value)}
       />
       <button onClick={addGoal}>Add Goal</button>
       <input

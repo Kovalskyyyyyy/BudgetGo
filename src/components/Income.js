@@ -18,14 +18,13 @@ export const Income = () => {
     width: '100%'
   };
 
-  // Updated to handle flex-direction row for side-by-side layout
   const containerStyle = {
     display: 'flex',
-    flexDirection: 'row',  // Align items horizontally
-    justifyContent: 'center',  // Center the items horizontally
-    alignItems: 'flex-start',  // Align items to the start of the flex line vertically
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     width: '100%',
-    gap: '40px'  // Space between the form and the list of incomes
+    gap: '40px'
   };
 
   const listItemStyle = {
@@ -61,15 +60,15 @@ export const Income = () => {
       <div style={totalStyle}>TOTAL INCOMES: {totalIncome.toFixed(2)}kč</div>
       <div style={containerStyle}>
         <IncomeForm addTransaction={addIncome} isIncome={true} style={{ maxWidth: '100%' }} />
-        <div style={{ width: '60%' }}> 
+        <div style={{ width: '60%' }}>
           <ul style={{ padding: 0, width: '100%', overflowY: 'auto' }}>
             {incomes.map((income) => (
-              <li key={income.id} style={listItemStyle}>
+              <li key={income._id} style={listItemStyle}>
                 <span style={itemDetailStyle}><strong>Name:</strong> {income.name}</span>
                 <span style={itemDetailStyle}><strong>Amount:</strong> {income.amount.toFixed(2)}kč</span>
                 <span style={itemDetailStyle}><strong>Date:</strong> {formatDate(income.date)}</span>
                 <span style={itemDetailStyle}><strong>Type:</strong> {income.type}</span>
-                <button onClick={() => deleteIncome(income.id)} style={{ padding: '5px 10px', fontSize: '0.85rem', marginLeft: '10px' }}>Delete</button>
+                <button onClick={() => deleteIncome(income._id)} style={{ padding: '5px 10px', fontSize: '0.85rem', marginLeft: '10px' }}>Delete</button>
               </li>
             ))}
           </ul>

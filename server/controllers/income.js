@@ -37,25 +37,13 @@ exports.getIncomes = async (req, res) =>{
     }
 }
 
-exports.deleteIncome = async (req, res) => {
-    const { id } = req.params;
-
-    // Validate the ID first
-    if (!id) {
-        return res.status(400).json({ message: 'Invalid request: Income ID is required.' });
-    }
-
-    try {
-        const deletedIncome = await IncomeSchema.findByIdAndDelete(id);
-
-        if (!deletedIncome) {
-            // If no document was found and thus none deleted
-            return res.status(404).json({ message: 'Income not found' });
-        }
-
-        res.status(200).json({ message: 'Income Deleted' });
-    } catch (err) {
-        console.error('Error deleting income:', err);
-        res.status(500).json({ message: 'Server Error', details: err.message });
-    }
-};
+exports.deleteIncome = async (req, res) =>{
+    const {id} = req.params;
+    IncomeSchema.findByIdAndDelete(id)
+        .then((income) =>{
+            res.status(200).json({message: 'Income Deleted'})
+        })
+        .catch((err) =>{
+            res.status(500).json({message: 'Server Error'})
+        })
+}
